@@ -18,10 +18,13 @@ FetchContent_MakeAvailable(catch2)
 file(GLOB_RECURSE ALL_SRC_FILES CONFIGURE_DEPENDS src/*.cpp)
 list(FILTER ALL_SRC_FILES EXCLUDE REGEX ".*/main.cpp$")
 
-add_library(baby_redis_core STATIC ${ALL_SRC_FILES})
+add_library(baby_redis_core STATIC ${ALL_SRC_FILES}
+        include/storage.hpp)
 target_include_directories(baby_redis_core PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
-add_executable(baby_redis src/main.cpp)
+add_executable(baby_redis src/main.cpp
+        include/storage.hpp
+        include/value.hpp)
 target_link_libraries(baby_redis PRIVATE baby_redis_core)
 target_include_directories(baby_redis PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
@@ -29,7 +32,8 @@ include(CTest)
 enable_testing()
 
 file(GLOB_RECURSE TEST_SRC_FILES CONFIGURE_DEPENDS tests/*.cpp)
-add_executable(unit_tests ${TEST_SRC_FILES})
+add_executable(unit_tests ${TEST_SRC_FILES}
+        include/storage.hpp)
 target_link_libraries(unit_tests PRIVATE baby_redis_core Catch2::Catch2WithMain)
 target_include_directories(unit_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
