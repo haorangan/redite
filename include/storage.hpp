@@ -9,8 +9,8 @@ namespace redite {
         Storage();
         ~Storage();
 
-        void set(const std::string& key, std::string value,
-             std::optional<std::chrono::seconds> ttl = std::nullopt);
+        void set(const std::string &key, std::string value,
+                 std::optional<std::chrono::seconds> ttl = std::nullopt);
 
         bool del(const std::string& key);
 
