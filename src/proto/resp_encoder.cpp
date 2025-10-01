@@ -12,8 +12,8 @@ namespace redite::resp {
         if (std::holds_alternative<SimpleString>(r)) {
             return encodeSimple(std::get<SimpleString>(r));
         }
-        if (std::holds_alternative<Array>(r)) {
-            return encodeArray(std::get<Array>(r));
+        if (std::get<std::unique_ptr<Array>>(r) ) {
+            return encodeArray(*std::get<std::unique_ptr<Array>>(r) );
         }
         if (std::holds_alternative<Error>(r)) {
             return encodeError(std::get<Error>(r));
@@ -25,7 +25,6 @@ namespace redite::resp {
             return encodeInteger(std::get<Integer>(r));
         }
         assert(false); // UNREACHABLE
-        return {};
     }
 
 
