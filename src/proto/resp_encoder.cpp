@@ -1,6 +1,7 @@
 #include "resp_encoder.hpp"
 
 #include <assert.h>
+#include <variant>
 
 #include "value.hpp"
 

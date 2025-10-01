@@ -3,10 +3,6 @@
 #include <vector>
 
 namespace redite::resp {
-    struct Command {
-        std::string name;
-        std::vector<std::string> args;
-    };
 
     struct SimpleString {
         std::string value; // +OK
