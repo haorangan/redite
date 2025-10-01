@@ -2,7 +2,9 @@
 #include <string>
 #include <vector>
 #include <optional>
-#include <variant>  
+#include <variant>
+#include <memory>
+#include <utility>
 
 namespace redite::resp {
 
