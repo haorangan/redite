@@ -51,8 +51,35 @@ namespace redite::commands {
         return encode(resp::OK());
     }
 
+    static std::string get(Storage& storage, const Command& cmd) {
+        if (cmd.argv.size() != 1) {
+            return encode(resp::Err("syntax error"));
+        }
+        const auto v = storage.get(cmd.argv[0]);
+        return v ? encode(resp::OK()) : "";
+    }
+
+    static std::string del_cmd(Storage& s, const Command& c) {
+        if (c.argv.empty())
+            return encode(resp::Err("wrong number of arguments for 'DEL'"));
+        long long n = 0;
+        for (const auto& k : c.argv) if (s.del(k)) ++n;
+        return encode(resp::Int(n));
+    }
+
+    static std::string incr_cmd(Storage&, const Command&) {
+        return encode(resp::Err("INCR not implemented"));
+    }
+    static std::string decr_cmd(Storage&, const Command&) {
+        return encode(resp::Err("DECR not implemented"));
+    }
+
     void register_string_commands(Dispatcher& d) {
         d.add("PING", ping);
         d.add("SET", set);
+        d.add("GET", get);
+        d.add("DEL", del_cmd);
+        d.add("INCR", incr_cmd);
+        d.add("DECR", decr_cmd);
     }// PING, SET, GET, DEL, INCR, DECR
 }

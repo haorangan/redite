@@ -6,11 +6,13 @@
 namespace redite {
     class Storage {
     public:
-        Storage();
-        ~Storage();
+        Storage() = default;
+        ~Storage() = default;
 
         void set(const std::string &key, std::string value,
                  std::optional<std::chrono::seconds> ttl = std::nullopt);
+
+        std::optional<Value> get(const std::string &key);
 
         bool del(const std::string& key);
 

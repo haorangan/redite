@@ -16,6 +16,15 @@ namespace redite {
         kv_.insert_or_assign(key, std::move(val));
     }
 
+    std::optional<Value> Storage::get(const std::string& key) {
+        purge_if_expired(key);
+        const auto it = kv_.find(key);
+        if (it == kv_.end()) {
+            return std::nullopt;
+        }
+        return it->second;
+    }
+
     bool Storage::del(const std::string& key) {
         if (purge_if_expired(key)) {
             return false;
