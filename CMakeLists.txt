@@ -29,8 +29,7 @@ include(CTest)
 enable_testing()
 
 file(GLOB_RECURSE TEST_SRC_FILES CONFIGURE_DEPENDS tests/*.cpp)
-add_executable(unit_tests ${TEST_SRC_FILES}
-        include/storage.hpp)
+add_executable(unit_tests ${TEST_SRC_FILES})
 target_link_libraries(unit_tests PRIVATE baby_redis_core Catch2::Catch2WithMain)
 target_include_directories(unit_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
