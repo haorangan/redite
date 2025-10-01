@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <optional>
+#include <variant>  
 
 namespace redite::resp {
 
