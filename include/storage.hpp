@@ -1,5 +1,7 @@
 #pragma once
 #include <unordered_map>
+
+#include "metrics.hpp"
 #include "value.hpp"
 
 namespace redite {
@@ -19,8 +21,12 @@ namespace redite {
 
         std::optional<long long> ttl(const std::string& key);
 
+        Metrics& metrics() { return metrics_; }
+        [[nodiscard]] const Metrics& metrics() const { return metrics_; }
+
     private:
         std::unordered_map<std::string, Value> kv_;
+        Metrics metrics_;
 
         bool purge_if_expired(const std::string& key);
     };
