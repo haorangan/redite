@@ -1,8 +1,9 @@
 //
 // Created by Haoran Gan on 9/29/25.
 //
+#pragma once
+#include "dispatcher.hpp"
 
-#ifndef STRING_CMDS_HPP
-#define STRING_CMDS_HPP
-
-#endif //STRING_CMDS_HPP
+namespace redite::commands {
+    void register_string_commands(Dispatcher& d); // PING, SET, GET, DEL, INCR, DECR
+}
