@@ -17,7 +17,7 @@ namespace redite {
 
     class Dispatcher {
     public:
-        void add(std::string_view verb, Handler h) {
+        void add(const std::string_view verb, Handler h) {
             table_[std::string(verb)] = std::move(h);
         }
         std::string dispatch(Storage& store, const Command& cmd) const;
