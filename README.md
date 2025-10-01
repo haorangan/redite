@@ -1,4 +1,4 @@
-# Baby Redis
+# Redite
 
 A minimal Redis clone written in C++20.
 Implements a subset of Redis functionality, including RESP protocol parsing/encoding, a command dispatcher, an in-memory key–value store with TTL support, and a simple TCP server for client connections.
