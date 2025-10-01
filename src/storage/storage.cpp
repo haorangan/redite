@@ -16,6 +16,25 @@ namespace redite {
         kv_.insert_or_assign(key, std::move(val));
     }
 
+    int Storage::set_ttl(const std::string& key, const std::chrono::seconds ttl) {
+        purge_if_expired(key);
+
+        const auto it = kv_.find(key);
+        if (it == kv_.end()) {
+            return 0; // key missing
+        }
+
+        if (ttl <= std::chrono::seconds::zero()) {
+            // Expire immediately: delete key
+            kv_.erase(it);
+            return 1;
+        }
+
+        // Set/replace expiration in place
+        it->second.expireAt = Clock::now() + ttl;
+        return 1;
+    }
+
     std::optional<Value> Storage::get(const std::string& key) {
         purge_if_expired(key);
         const auto it = kv_.find(key);

@@ -12,6 +12,8 @@ namespace redite {
         void set(const std::string &key, std::string value,
                  std::optional<std::chrono::seconds> ttl = std::nullopt);
 
+        int set_ttl(const std::string &key, std::chrono::seconds ttl);
+
         std::optional<Value> get(const std::string &key);
 
         bool del(const std::string& key);
