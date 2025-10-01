@@ -56,7 +56,10 @@ namespace redite::commands {
             return encode(resp::Err("syntax error"));
         }
         const auto v = storage.get(cmd.argv[0]);
-        return v ? encode(resp::OK()) : "";
+        if (!v) {
+            return encode(resp::Nil());
+        }
+        return v ? encode(resp::BulkString(v.value().data)) : "";
     }
 
     static std::string del_cmd(Storage& s, const Command& c) {
