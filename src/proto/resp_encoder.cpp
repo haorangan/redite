@@ -1,6 +1,5 @@
 #include "resp_encoder.hpp"
 
-#include <assert.h>
 #include <variant>
 
 #include "value.hpp"
@@ -8,23 +7,25 @@
 namespace redite::resp {
 
     static constexpr std::string_view EOL = "\r\n";
+
     std::string encode(const Reply& r) {
-        if (std::holds_alternative<SimpleString>(r)) {
-            return encodeSimple(std::get<SimpleString>(r));
+        if (const auto p = std::get_if<SimpleString>(&r)) {
+            return encodeSimple(*p);
         }
-        if (std::get<std::unique_ptr<Array>>(r) ) {
-            return encodeArray(*std::get<std::unique_ptr<Array>>(r) );
+        if (const auto p = std::get_if<Error>(&r)) {
+            return encodeError(*p);
         }
-        if (std::holds_alternative<Error>(r)) {
-            return encodeError(std::get<Error>(r));
+        if (const auto p = std::get_if<Integer>(&r)) {
+            return encodeInteger(*p);
         }
-        if (std::holds_alternative<BulkString>(r)) {
-            return encodeBulk(std::get<BulkString>(r));
+        if (const auto p = std::get_if<BulkString>(&r)) {
+            return encodeBulk(*p);
         }
-        if (std::holds_alternative<Integer>(r)) {
-            return encodeInteger(std::get<Integer>(r));
+        if (const auto p = std::get_if<std::unique_ptr<Array>>(&r)) {
+            return *p ? encodeArray(**p)
+                      : std::string("*-1") + std::string(EOL);
         }
-        assert(false); // UNREACHABLE
+        return {};
     }
 
 
@@ -37,7 +38,7 @@ namespace redite::resp {
     }
 
     std::string encodeInteger(const Integer& i) {
-        return ":" + i.value + std::string(EOL);
+        return ":" + std::to_string(i.value) + std::string(EOL);
     }
 
     std::string encodeBulk(const BulkString& b) {
