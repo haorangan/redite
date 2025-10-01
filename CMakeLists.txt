@@ -21,6 +21,9 @@ list(FILTER ALL_SRC_FILES EXCLUDE REGEX ".*/main.cpp$")
 add_library(baby_redis_core STATIC ${ALL_SRC_FILES})
 target_include_directories(baby_redis_core PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
+file(GLOB_RECURSE ALL_HEADERS CONFIGURE_DEPENDS include/*.hpp)
+target_sources(baby_redis_core PRIVATE ${ALL_SRC_FILES} ${ALL_HEADERS})
+
 add_executable(baby_redis src/main.cpp)
 target_link_libraries(baby_redis PRIVATE baby_redis_core)
 target_include_directories(baby_redis PRIVATE ${CMAKE_SOURCE_DIR}/include)
