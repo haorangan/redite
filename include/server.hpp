@@ -2,7 +2,6 @@
 #include <cstdint>
 #include "storage.hpp"
 #include "dispatcher.hpp"
-#include "resp_parser.hpp"
 
 namespace redite {
 
