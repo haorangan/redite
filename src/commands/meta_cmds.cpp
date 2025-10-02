@@ -26,7 +26,7 @@ namespace redite::commands {
 
         std::string info_cmd(Storage& s, const Command& c) {
             auto& m = s.metrics();
-            m.ops_total++; // counting INFO itself is optional
+            m.ops_total++;
 
             if (!c.argv.empty()) {
                 return encode(Err("wrong number of arguments for 'INFO'"));
@@ -48,7 +48,7 @@ namespace redite::commands {
             out += "cmd_echo:"         + std::to_string(m.cmd_echo)         + "\r\n";
 
             out += "\r\n# Keyspace\r\n";
-            out += "keys:"             + std::to_string(/* current size */ s.size()) + "\r\n";
+            out += "keys:"             + std::to_string(s.size()) + "\r\n";
             out += "hits:"             + std::to_string(m.hits)             + "\r\n";
             out += "misses:"           + std::to_string(m.misses)           + "\r\n";
             out += "expired_purges:"   + std::to_string(m.expired_purges)   + "\r\n";

@@ -63,8 +63,10 @@ namespace redite::commands {
         }
         const auto v = storage.get(cmd.argv[0]);
         if (!v) {
+            storage.metrics().misses++;
             return encode(resp::Nil());
         }
+        storage.metrics().hits++;
         return v ? encode(resp::BulkString(v.value().data)) : "";
     }
 
