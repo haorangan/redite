@@ -5,8 +5,8 @@
 #include "string_cmds.hpp"
 
 #include <resp_encoder.hpp>
-#include "algorithm"
-
+#include "aof_writer.hpp"
+#include "helpers.hpp"
 
 
 namespace redite::commands {
@@ -52,6 +52,9 @@ namespace redite::commands {
             return encode(resp::Err("syntax error"));
         }
         s.set(cmd.argv[0], cmd.argv[1], ttl);
+        if (g_aof) {
+            g_aof->append(resp::encode_command(cmd));
+        }
         return encode(resp::OK());
     }
 
@@ -77,6 +80,9 @@ namespace redite::commands {
             return encode(resp::Err("wrong number of arguments for 'DEL'"));
         long long n = 0;
         for (const auto& k : c.argv) if (s.del(k)) ++n;
+        if (n > 0 && g_aof) {
+            g_aof->append(resp::encode_command(c));
+        }
         return encode(resp::Int(n));
     }
 

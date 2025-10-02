@@ -5,6 +5,9 @@
 
 #include <resp_encoder.hpp>
 
+#include "aof_writer.hpp"
+#include "helpers.hpp"
+
 namespace redite::commands {
 
     static std::string expire_cmd(Storage& s, const Command& c) {
@@ -22,6 +25,9 @@ namespace redite::commands {
             return encode(resp::Err("value is not an integer or out of range"));
         }
         const int res = s.set_ttl(key, std::chrono::seconds(secs));
+        if (res == 1 && g_aof) {
+            g_aof->append(resp::encode_command(c));
+        }
         return encode(resp::Int(res));
     }
 
