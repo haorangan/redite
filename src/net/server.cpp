@@ -5,8 +5,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <unistd.h>         // close
-#include <csignal>         // SIGPIPE
+#include <unistd.h>
+#include <csignal>
 
 #include "resp_encoder.hpp"
 #include "resp_parser.hpp"

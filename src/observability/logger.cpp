@@ -49,8 +49,22 @@ namespace redite {
     }
 
     void Logger::init(const std::string& file_path, const LogLevel level, const bool also_stderr) {
-        // Meyers singleton gets constructed on first use
-        (void) new (&instance()) Logger(file_path, level, also_stderr);
+        Logger& inst = instance();
+        inst.level_.store(level, std::memory_order_relaxed);
+
+        std::lock_guard lock(inst.mtx_);
+        if (inst.fp_) { std::fclose(inst.fp_); inst.fp_ = nullptr; }
+        inst.to_stderr_ = also_stderr;
+
+        if (!file_path.empty()) {
+            inst.fp_ = std::fopen(file_path.c_str(), "a");
+            if (inst.fp_) {
+                setvbuf(inst.fp_, nullptr, _IOLBF, 0);  // line buffering
+            } else {
+                inst.to_stderr_ = true;
+                std::fprintf(stderr, "[logger] warn: failed to open '%s'\n", file_path.c_str());
+            }
+        }
     }
 
     Logger& Logger::instance() {
@@ -80,8 +94,12 @@ namespace redite {
         }
         line << "\n";
         auto s = line.str();
-        if (fp_) std::fwrite(s.data(), 1, s.size(), fp_);
-        if (to_stderr_) std::fwrite(s.data(), 1, s.size(), stderr);
+        if (fp_) {
+            std::fwrite(s.data(), 1, s.size(), fp_);
+        }
+        if (to_stderr_) {
+            std::fwrite(s.data(), 1, s.size(), stderr);
+        }
     }
 
     void Logger::flush() {
