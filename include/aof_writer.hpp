@@ -22,7 +22,6 @@ namespace redite {
         void maybe_fsync();
     };
 
-    // Exposed pointer you set in main *after* replay.
     extern AofWriter* g_aof;
 
-} // namespace redi
+}
