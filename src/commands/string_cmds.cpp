@@ -7,6 +7,7 @@
 #include <resp_encoder.hpp>
 #include "aof_writer.hpp"
 #include "helpers.hpp"
+#include "logger.hpp"
 
 
 namespace redite::commands {
@@ -31,26 +32,25 @@ namespace redite::commands {
     }
 
     static std::string set(Storage& s, const Command& cmd) {
-        s.metrics().cmd_set++;
-        s.metrics().ops_total++;
-        // syntax is SET key value [EX seconds]
-        if (cmd.argv.size() < 2) {
-            return encode(resp::Err("wrong number of arguments for 'SET'"));
-        }
+        s.metrics().cmd_set++; s.metrics().ops_total++;
+        if (cmd.argv.size() < 2) return encode(resp::Err("wrong number of arguments for 'SET'"));
 
         std::optional<seconds> ttl = std::nullopt;
         if (cmd.argv.size() == 4 && ieq(cmd.argv[2], "EX")) {
             try {
-                const ll sec = std::stoll(cmd.argv[3]);
+                const long long sec = std::stoll(cmd.argv[3]);
                 if (sec < 0) return encode(resp::Err("invalid expire time in set"));
                 ttl = seconds(sec);
-            } catch (const std::exception&) {
+            } catch (std::exception&) {
                 return encode(resp::Err("invalid expire time in set"));
             }
-        }
-        else if (cmd.argv.size() != 2) {
+        } else if (cmd.argv.size() != 2) {
             return encode(resp::Err("syntax error"));
         }
+
+        RLOG_DEBUG("set_begin", { Field{"key_len", std::to_string(cmd.argv[0].size())},
+                                  Field{"ttl", ttl ? std::to_string(ttl->count()) : "none"} });
+
         s.set(cmd.argv[0], cmd.argv[1], ttl);
         if (g_aof) {
             g_aof->append(resp::encode_command(cmd));
@@ -59,18 +59,18 @@ namespace redite::commands {
     }
 
     static std::string get(Storage& storage, const Command& cmd) {
-        storage.metrics().cmd_get++;
-        storage.metrics().ops_total++;
-        if (cmd.argv.size() != 1) {
-            return encode(resp::Err("syntax error"));
-        }
+        storage.metrics().cmd_get++; storage.metrics().ops_total++;
+        if (cmd.argv.size() != 1) return encode(resp::Err("syntax error"));
+
         const auto v = storage.get(cmd.argv[0]);
         if (!v) {
             storage.metrics().misses++;
+            RLOG_DEBUG("get_miss", { Field{"key_len", std::to_string(cmd.argv[0].size())} });
             return encode(resp::Nil());
         }
         storage.metrics().hits++;
-        return v ? encode(resp::BulkString(v.value().data)) : "";
+        RLOG_DEBUG("get_hit", { Field{"key_len", std::to_string(cmd.argv[0].size())} });
+        return encode(resp::BulkString(v->data));
     }
 
     static std::string del_cmd(Storage& s, const Command& c) {

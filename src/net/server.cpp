@@ -9,6 +9,7 @@
 #include <csignal>         // SIGPIPE
 
 #include "resp_encoder.hpp"
+#include "resp_parser.hpp"
 
 namespace redite {
 

@@ -20,7 +20,7 @@ struct Field {
 
 class Logger {
 public:
-    static void init(std::string file_path = "", LogLevel level = LogLevel::INFO, bool also_stderr = true);
+    static void init(const std::string& file_path = "", LogLevel level = LogLevel::INFO, bool also_stderr = true);
     static void set_level(LogLevel lvl);
     static LogLevel level();
 
@@ -29,7 +29,7 @@ public:
     static void flush();
 
 private:
-    Logger(std::string file_path, LogLevel level, bool also_stderr);
+    Logger(const std::string& file_path, LogLevel level, bool also_stderr);
     ~Logger();
     void write_line(LogLevel lvl, std::string_view msg, std::initializer_list<Field> fields);
 

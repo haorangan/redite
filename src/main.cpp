@@ -9,13 +9,18 @@
 #include "aof_writer.hpp"
 #include "storage.hpp"
 #include "dispatcher.hpp"
+#include "logger.hpp"
 #include "registry.hpp"
 #include "server.hpp"
 
 int main(int argc, char** argv) {
     uint16_t port = 6380;
     const std::string aof_path = "redite.aof";
-    auto fsync_mode = redite::AofFsyncMode::EverySec;
+
+    redite::Logger::init("redite.log", redite::LogLevel::DEBUG, /*also_stderr=*/true);
+    RLOG_INFO("server_start", { redite::Field{"port","6380"}, redite::Field{"fsync","everysec"} });
+
+    constexpr auto fsync_mode = redite::AofFsyncMode::EverySec;
     if (argc >= 2) {
         try { port = static_cast<uint16_t>(std::stoul(argv[1])); }
         catch (...) { std::cerr << "Usage: " << argv[0] << " [port]\n"; return 1; }
@@ -34,6 +39,7 @@ int main(int argc, char** argv) {
         redite::Server srv(port);
         std::cout << "redite listening on 0.0.0.0:" << port << " …\n";
         srv.run(store, dispatcher);
+        redite::Logger::flush();
     } catch (const std::exception& ex) {
         std::cerr << "fatal: " << ex.what() << "\n";
         return 1;
