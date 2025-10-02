@@ -8,6 +8,8 @@
 namespace redite::commands {
 
     static std::string expire_cmd(Storage& s, const Command& c) {
+        s.metrics().cmd_expire++;
+        s.metrics().ops_total++;
         if (c.argv.size() != 2) {
             return encode(resp::Err("wrong number of arguments for EXPIRE"));
         }
@@ -24,6 +26,9 @@ namespace redite::commands {
     }
 
     static std::string ttl_cmd(Storage& s, const Command& c) {
+        s.metrics().cmd_ttl++;
+        s.metrics().ops_total++;
+
         if (c.argv.size() != 1)
             return encode(resp::Err("wrong number of arguments for 'TTL'"));
 

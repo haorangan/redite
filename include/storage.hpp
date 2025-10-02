@@ -24,6 +24,8 @@ namespace redite {
         Metrics& metrics() { return metrics_; }
         [[nodiscard]] const Metrics& metrics() const { return metrics_; }
 
+        size_t size();
+
     private:
         std::unordered_map<std::string, Value> kv_;
         Metrics metrics_;

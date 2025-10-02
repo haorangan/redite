@@ -81,9 +81,25 @@ namespace redite {
         const auto it = kv_.find(key);
         if (it == kv_.end()) return false;
         if (is_expired(it->second)) {
+            metrics().expired_purges++;
             kv_.erase(it);
             return true;
         }
         return false;
+    }
+
+    size_t Storage::size() {
+        const auto now = Clock::now();
+        size_t n = 0;
+        for (auto it = kv_.begin(); it != kv_.end(); ) {
+            if (it->second.expireAt && now >= *it->second.expireAt) {
+                it = kv_.erase(it);
+                metrics_.expired_purges++;
+            } else {
+                ++n;
+                ++it;
+            }
+        }
+        return n;
     }
 }

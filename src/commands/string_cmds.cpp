@@ -21,14 +21,18 @@ namespace redite::commands {
         return true;
     }
 
-    static std::string ping(Storage&, const Command& cmd) {
+    static std::string ping(Storage& s, const Command& cmd) {
+        s.metrics().cmd_ping++;
+        s.metrics().ops_total++;
         if (!cmd.argv.empty()) {
             return encode(resp::Err("wrong number of arguments for 'PING'"));
         }
         return encode(resp::PONG());
     }
 
-    static std::string set(Storage& storage, const Command& cmd) {
+    static std::string set(Storage& s, const Command& cmd) {
+        s.metrics().cmd_set++;
+        s.metrics().ops_total++;
         // syntax is SET key value [EX seconds]
         if (cmd.argv.size() < 2) {
             return encode(resp::Err("wrong number of arguments for 'SET'"));
@@ -47,11 +51,13 @@ namespace redite::commands {
         else if (cmd.argv.size() != 2) {
             return encode(resp::Err("syntax error"));
         }
-        storage.set(cmd.argv[0], cmd.argv[1], ttl);
+        s.set(cmd.argv[0], cmd.argv[1], ttl);
         return encode(resp::OK());
     }
 
     static std::string get(Storage& storage, const Command& cmd) {
+        storage.metrics().cmd_get++;
+        storage.metrics().ops_total++;
         if (cmd.argv.size() != 1) {
             return encode(resp::Err("syntax error"));
         }
@@ -63,6 +69,8 @@ namespace redite::commands {
     }
 
     static std::string del_cmd(Storage& s, const Command& c) {
+        s.metrics().cmd_del++;
+        s.metrics().ops_total++;
         if (c.argv.empty())
             return encode(resp::Err("wrong number of arguments for 'DEL'"));
         long long n = 0;

@@ -25,7 +25,7 @@ namespace redite {
         // keyspace stats
         uint64_t hits = 0;        // GET hit
         uint64_t misses = 0;      // GET miss
-        uint64_t expired_purges = 0; // increment where you purge
+        uint64_t expired_purges = 0;
     };
 
 }
