@@ -10,7 +10,7 @@ namespace redite::resp {
         std::string out;
         out.reserve(16 * n); // cheap prealloc
 
-        auto bulk = [&](std::string_view s) {
+        auto bulk = [&](const std::string_view s) {
             out += "$";
             out += std::to_string(s.size());
             out += "\r\n";
@@ -21,9 +21,9 @@ namespace redite::resp {
         out += "*";
         out += std::to_string(n);
         out += "\r\n";
-        bulk(cmd.name);                 // already uppercased by parser
+        bulk(cmd.name);
         for (auto& a : cmd.argv) bulk(a);
         return out;
     }
 
-} // namespace redite::resp
+}
