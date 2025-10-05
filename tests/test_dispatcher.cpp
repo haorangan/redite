@@ -3,7 +3,6 @@
 #include "storage.hpp"
 #include "dispatcher.hpp"
 #include "registry.hpp"
-#include "resp_encoder.hpp"
 
 using namespace redite;
 
